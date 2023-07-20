@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: trivy-scan
+spec:
+  params:
+    - name: image-name
+      type: string
+      description: The image to be scanned by Trivy.
+  steps:
+    - name: scan
+      image: aquasec/trivy:latest
+      script: |
+        trivy image --no-progress $(params.image-name)

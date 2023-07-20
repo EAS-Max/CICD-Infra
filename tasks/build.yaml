@@ -1,20 +1,17 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: build-image-task
+  name: docker-build
 spec:
   params:
     - name: image-name
+      type: string
       description: The name of the image to build.
-  resources:
-    inputs:
-      - name: source
-        type: git
+  workspaces:
+    - name: source
   steps:
-    - name: build-and-push
-      image: gcr.io/kaniko-project/executor:latest
-      command:
-        - /kaniko/executor
-      args:
-        - --dockerfile=/workspace/source/Dockerfile
-        - --destination=<nexus-url>/<nexus-repository>/$(params.image-name)
+    - name: build
+      image: docker
+      script: |
+        cd $(workspaces.source.path)
+        docker build -t $(params.image-name) .

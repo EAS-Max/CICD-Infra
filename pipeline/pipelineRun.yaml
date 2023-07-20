@@ -1,17 +1,18 @@
----
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: run-code-scan-build-and-push
+  name: my-pipeline-run
 spec:
   pipelineRef:
-    name: code-scan-build-and-push
+    name: my-pipeline
   params:
-    - name: repo-url
-      value: "https://github.com/EAS-Max/testApp.git"
+    - name: repository
+      value: https://github.com/EAS-Max/testApp.git
     - name: revision
-      value: "main"
-    - name: registry
-      value: "my-nexus3"
+      value: main
+    - name: sonarHost
+      value: <sonarqube host>
+    - name: sonarLogin
+      value: <sonarqube login token>
     - name: image-name
-      value: "testapp:latest"
+      value: testApp:latest

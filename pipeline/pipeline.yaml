@@ -1,47 +1,61 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: code-scan-build-and-push
+  name: my-pipeline
 spec:
   params:
-    - name: repo-url
+    - name: repository
       type: string
-      description: The URL of the Git repository.
     - name: revision
       type: string
-      description: The revision of the Git repository.
-    - name: registry
+    - name: sonarHost
       type: string
-      description: The registry to which we push the image.
+    - name: sonarLogin
+      type: string
     - name: image-name
       type: string
-      description: The name of the image to be pushed.
+  workspaces:
+    - name: shared-workspace
   tasks:
-    - name: scan-code
+    - name: code-scan
       taskRef:
-        name: scan-code-task
+        name: sonarqube-scan
+      workspaces:
+        - name: source
+          workspace: shared-workspace
       params:
-        - name: repo-url
-          value: $(params.repo-url)
+        - name: repository
+          value: $(params.repository)
         - name: revision
           value: $(params.revision)
+        - name: sonarHost
+          value: $(params.sonarHost)
+        - name: sonarLogin
+          value: $(params.sonarLogin)
     - name: build-image
       taskRef:
-        name: build-image-task
+        name: docker-build
+      workspaces:
+        - name: source
+          workspace: shared-workspace
       params:
-        - name: repo-url
-          value: $(params.repo-url)
-        - name: revision
-          value: $(params.revision)
+        - name: image-name
+          value: $(params.image-name)
       runAfter:
-        - scan-code
+        - code-scan
+    - name: image-scan
+      taskRef:
+        name: trivy-scan
+      params:
+        - name: image-name
+          value: $(params.image-name)
+      runAfter:
+        - build-image
     - name: push-image
       taskRef:
         name: push-image-task
       params:
         - name: image-name
           value: $(params.image-name)
-        - name: registry
-          value: $(params.registry)
       runAfter:
-        - build-image
+        - image-scan

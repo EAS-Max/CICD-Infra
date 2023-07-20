@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: sonarqube-scan
+spec:
+  params:
+    - name: repository
+      type: string
+      description: The repository URL to clone from.
+    - name: revision
+      type: string
+      description: The revision to clone from the repository.
+    - name: sonarHost
+      type: string
+      description: The SonarQube server host URL.
+    - name: sonarLogin
+      type: string
+      description: The SonarQube login token.
+  steps:
+    - name: clone
+      image: alpine/git:latest
+      script: |
+        git clone $(params.repository) /workspace/source --depth 1
+        cd /workspace/source
+        git checkout $(params.revision)
+    - name: scan
+      image: maven:3.6.3-openjdk-11
+      script: |
+        cd /workspace/source
+        mvn sonar:sonar -Dsonar.host.url=$(params.sonarHost) -Dsonar.login=$(params.sonarLogin)
