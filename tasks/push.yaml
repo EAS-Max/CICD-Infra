@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: push-to-nexus-task
+  name: push-image-task
 spec:
   params:
     - name: image-name
@@ -15,4 +15,4 @@ spec:
   volumes:
     - name: docker-config
       secret:
-        secretName: <your-nexus-username-password-secret> # The secret containing your Nexus username and password.
+        secretName: <nexus-username-password-secret> # The secret containing your Nexus username and password.

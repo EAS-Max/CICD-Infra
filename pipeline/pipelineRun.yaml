@@ -1,0 +1,17 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: run-code-scan-build-and-push
+spec:
+  pipelineRef:
+    name: code-scan-build-and-push
+  params:
+    - name: repo-url
+      value: "https://github.com/EAS-Max/testApp.git"
+    - name: revision
+      value: "main"
+    - name: registry
+      value: "my-nexus3"
+    - name: image-name
+      value: "testapp:latest"

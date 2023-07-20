@@ -19,4 +19,4 @@ spec:
       image: aquasec/trivy:latest
       script: |
         cd /workspace/source
-        trivy fs .   # Perform filesystem scan on the current directory
+        trivy fs .
