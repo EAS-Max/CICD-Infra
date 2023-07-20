@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: scan-code-task
+spec:
+  params:
+    - name: repo-url
+      description: The URL of the Git repository.
+    - name: revision
+      description: The revision of the Git repository.
+  steps:
+    - name: git-clone
+      image: alpine/git
+      script: |
+        git clone $(params.repo-url) /workspace/source
+        cd /workspace/source
+        git checkout $(params.revision)
+    - name: code-scan
+      image: aquasec/trivy:latest
+      script: |
+        cd /workspace/source
+        trivy fs .   # Perform filesystem scan on the current directory
