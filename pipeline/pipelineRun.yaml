@@ -5,6 +5,9 @@ metadata:
 spec:
   pipelineRef:
     name: my-pipeline
+  workspaces:
+    - name: shared-workspace
+      emptyDir: {}
   params:
     - name: repository
       value: https://github.com/EAS-Max/testApp.git
